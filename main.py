@@ -171,7 +171,7 @@ print(
     "Lancement du RDP\n"
     "****************\n"
 )
-rdp_clientwin1 = subprocess.run(["xfreerdp /u:clientwin1 /p:clientwin1 /v:192.168.25.5 /cert:ignore"], shell=True, capture_output=True, text=True)
+rdp_clientwin1 = subprocess.run(["xfreerdp3 /u:clientwin1 /p:clientwin1 /v:192.168.25.5 /cert:ignore & sleep 5 && pkill -f xfreerdp3"], shell=True, capture_output=True, text=True)
 print(
     "**********************************\n"
     "Résultat du RDP sur le clientwin1:\n"
